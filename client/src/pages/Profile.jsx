@@ -1,22 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {useRef} from 'react';
-import {getStorage, uploadBytesResumable, ref, getDownloadURL} from 'firebase/storage';
-import {app} from '../firebase'
+import { useRef } from 'react';
+import { getStorage, 
+          uploadBytesResumable, 
+          ref, 
+          getDownloadURL} from 'firebase/storage';
+import {app} from '../firebase';
+import { updateUserFailure, updateUserSuccess, updateUserStart } from '../../redux/user/userSlice';
+import { useDispatch } from 'react-redux';
 
 export default function Profile(){
   const fileRef=useRef(null); 
-  const {currentuser} = useSelector((State)=>State.user);
+  const { currentuser, loading, error } = useSelector((State)=>State.user);
   const [file, setFile]=useState(undefined);
   const [filePerc, setFilePerc]=useState(0);
   const [fileUploadError, setFileUploadError]=useState(false);
   const [formData, setFormData]= useState({});
+  const [updateSuccess, setUpdateSuccess]=useState(false);
+  const dispatch=useDispatch();
   console.log(formData);
-  console.log(filePerc);
-  console.log(fileUploadError);
+  
   //firebase storage
-  // allow read;
-  // allow write: if
+  // allow read;x`
+  // allow write: if  
   // request.resource.size < 2 * 1024 * 1024 &&
   // request.resource.contentType.matches('image/.*')
 
@@ -46,14 +52,44 @@ export default function Profile(){
     );
   }
 );
+
+  
     
+  };
+  const handleChange=(e)=>{
+    setFormData({...formData,[e.target.id]:e.target.value});
+  };
+  const handleSubmit=async(e)=>{
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const res = await fetch(`/api/user/update/${currentuser._id}`,{
+        method:'POST',
+        headers:{
+          'Content-type' :  'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data=await res.json();
+      if (data.success==false){
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+      
+    } catch (error) {
+        dispatch(updateUserFailure(error.message));
+    }
   };
   return (
     <div className='p-3 max-w-lg mx-auto'>
     <h1 className='text-3xl font-semibold text-center my-7'>
       Profile
     </h1>
-    <form className='flex flex-col gap-5'>
+    <form 
+    onSubmit={handleSubmit}
+    className='flex flex-col gap-5'>
     <input 
       type='file' 
       ref={fileRef} 
@@ -79,11 +115,34 @@ export default function Profile(){
             ""
           )}
         </p>
-      <input type='text' placeholder='username' id='username' className='border p-3 rounded-lg' />
-      <input type='email' placeholder='email' id='email' className='border p-3 rounded-lg' />
-      <input type='text' placeholder='password' id='password' className='border p-3 rounded-lg' />
-      <button className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80' >
-        Update
+      <input 
+        type='text' 
+        placeholder='username' 
+        id='username' 
+        className='border p-3 rounded-lg'
+        defaultValue={currentuser.username} 
+        onChange={handleChange}
+        />
+      <input 
+        type='email' 
+        placeholder='email' 
+        id='email' 
+        className='border p-3 rounded-lg' 
+        defaultValue={currentuser.email}
+        onChange={handleChange}
+        />
+      <input 
+        type='password' 
+        placeholder='password' 
+        id='password' 
+        className='border p-3 rounded-lg' 
+        onChange={handleChange}
+        />
+      <button 
+        className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80' 
+        disabled={loading}
+        >
+        {loading ? 'Loading...': 'Update'}
       </button>
     </form>
     <div className='flex justify-between mt-5'>
@@ -95,7 +154,12 @@ export default function Profile(){
       </span>
     </div>
 
-      
+      <p className='text-red-700 mt-5'>{error ? error: ''}
+
+      </p>
+      <p className='text-green-700 mt-5'>
+            {updateSuccess ? 'User is updated successfully!': ''}
+      </p>
     </div>
   )
 }
