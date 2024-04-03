@@ -9,6 +9,7 @@ import {app} from '../firebase';
 import { updateUserFailure, updateUserSuccess, updateUserStart, signOutStart } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { deleteUserFailure, deleteUserStart, deleteUserSuccess } from '../redux/user/userSlice';
+import {useNavigate } from 'react-router-dom';
 
 export default function Profile(){
   const fileRef=useRef(null); 
@@ -19,6 +20,7 @@ export default function Profile(){
   const [formData, setFormData]= useState({});
   const [updateSuccess, setUpdateSuccess]=useState(false);
   const dispatch=useDispatch();
+  const navigate=useNavigate();
   console.log(formData);
   
   //firebase storage
@@ -95,7 +97,9 @@ export default function Profile(){
         dispatch(deleteUserFailure(data.message));
         return;
       }
+      
       dispatch(deleteUserSuccess(data))
+      
     } catch (error) {
       dispatch(deleteUserFailure(error.message))
     }
@@ -111,6 +115,7 @@ export default function Profile(){
         return;
       }
       dispatch(deleteUserSuccess(data));
+      navigate('/sign-in');
     } catch (error) {
       dispatch(deleteUserFailure(data.message))
     }
