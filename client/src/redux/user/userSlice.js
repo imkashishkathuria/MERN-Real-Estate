@@ -22,7 +22,7 @@ const userSlice=createSlice({
             state.error=action.payload;
             state.loading=false;
         },
-        updateUserStart:(state)=>{
+        updateUserStart: (state)=>{
             state.loading=true;
         },
         updateUserSuccess:(state,action)=>{
@@ -30,50 +30,53 @@ const userSlice=createSlice({
             state.loading=false;
             state.error=null;
         },
-        updateUserFailure:(state,action)=>{
+        updateUserFailure: (state,action)=>{
             state.error=action.payload;
             state.loading=false;
         },
-        deleteUserStart:(state)=>{
-            state.loading=true;
+        deleteUserStart: (state) => {
+        state.loading = true;
         },
-        deleteUserSuccess:(state)=>{
-            state.currentuser=null;
-            state.loading=false;
-            state.error=null;
+        deleteUserSuccess: (state) => {
+        state.currentuser = null;
+        state.loading = false;
+        state.error = null;
         },
-        deleteUserFailure:(state,action)=>{
-            state.error=action.payload;
-            state.loading=false;
+        deleteUserFailure: (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
         },
-        signOutStart:(state)=>{
-            state.loading=true;
+        signOutUserStart: (state) => {
+        state.loading = true;
         },
-        signOutSuccess:(state)=>{
-            state.currentuser=null;
-            state.loading=false;
-            state.error=null;
+        signOutUserSuccess: (state) => {
+        state.currentuser = null;
+        state.loading = false;
+        state.error = null;
         },
-        signOutFailure:(state,action)=>{
-            state.error=action.payload;
-            state.loading=false;
+        signOutUserFailure: (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
         },
 
-    }
+    },
 });
 
-export const {  signInStart, 
-                signInFailure, 
-                signInSuccess,
-                updateUserFailure,
-                updateUserStart,
-                updateUserSuccess,
-                deleteUserFailure,
-                deleteUserStart,
-                deleteUserSuccess,
-                signOutFailure,
-                signOutSuccess,
-                signOutStart } = userSlice.actions;
+export const { 
+    signInStart, 
+    signInFailure, 
+    signInSuccess,
+    updateUserFailure,
+    updateUserSuccess,
+    updateUserStart,
+    deleteUserFailure,
+    deleteUserStart,
+    deleteUserSuccess,
+    signOutUserFailure,
+    signOutUserSuccess,
+    signOutUserStart 
+    } = userSlice.actions;
 
 export default userSlice.reducer;
+
 

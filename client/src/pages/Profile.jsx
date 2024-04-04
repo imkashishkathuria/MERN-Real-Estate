@@ -6,10 +6,23 @@ import { getStorage,
           ref, 
           getDownloadURL} from 'firebase/storage';
 import {app} from '../firebase';
-import { updateUserFailure, updateUserSuccess, updateUserStart, signOutStart } from '../redux/user/userSlice';
+
 import { useDispatch } from 'react-redux';
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess } from '../redux/user/userSlice';
+
 import {useNavigate } from 'react-router-dom';
+
+import {signInStart, 
+    signInFailure, 
+    signInSuccess,
+    updateUserFailure,
+    updateUserSuccess,
+    updateUserStart,
+    deleteUserFailure,
+    deleteUserStart,
+    deleteUserSuccess,
+    signOutUserFailure,
+    signOutUserSuccess,
+    signOutUserStart } from '../redux/user/userSlice';
 
 export default function Profile(){
   const fileRef=useRef(null); 
@@ -23,7 +36,7 @@ export default function Profile(){
   const navigate=useNavigate();
   console.log(formData);
   
-  //firebase storage
+  //firebase storage1
   // allow read;x`
   // allow write: if  
   // request.resource.size < 2 * 1024 * 1024 &&
@@ -74,7 +87,7 @@ export default function Profile(){
         body: JSON.stringify(formData),
       });
       const data=await res.json();
-      if (data.success==false){
+      if (data.success===false){
         dispatch(updateUserFailure(data.message));
         return;
       }
@@ -93,7 +106,7 @@ export default function Profile(){
         method: 'DELETE',
       });
       const data=await res.json();
-      if(data.success==false){
+      if(data.success===false){
         dispatch(deleteUserFailure(data.message));
         return;
       }
@@ -107,7 +120,7 @@ export default function Profile(){
 
   const handleSignOut=async()=>{
     try {
-      dispatch(signOutStart())
+      dispatch(signOutUserStart())
       const res=await fetch('/api/auth/signout');
       const data=await res.json();
       if(data.success === false){
@@ -115,7 +128,7 @@ export default function Profile(){
         return;
       }
       dispatch(deleteUserSuccess(data));
-      navigate('/sign-in');
+      // navigate('/sign-in');
     } catch (error) {
       dispatch(deleteUserFailure(data.message))
     }
@@ -143,9 +156,9 @@ export default function Profile(){
             <span className='text-red-700'>
               Error image upload (image must be less than 2 mb)
             </span>
-          ): filePerc> 0 && filePerc <100 ?(
+          ): filePerc> 0 && filePerc <1000 ?(
             <span className='text-slate-700'>{`Uploading ${filePerc} %`}</span>
-          ) : filePerc === 100 ? (
+          ) : filePerc === 1000 ? (
             <span className='text-green-700'>
               Image uploaded successfully!
             </span>
